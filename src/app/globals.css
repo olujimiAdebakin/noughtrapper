@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: #ffffff;
+	--foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
+}
+
+body {
+
+}
+
+::-webkit-scrollbar{
+	display: none;
+}
+
+.bg-default-100{
+	background-color: transparent;
+}
+
+.transition-transform-background {
+	display: transparent;
+}
+
+.p-3{
+	padding: 0;
+}
+
+span[data-slot="cursor"] {
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+  background-color: #E6E8EB;
+  display: flex;
+padding: 6px 12px;
+justify-content: center;
+align-items: center;
+border-radius: 6px;
+
+}
+/* .outline-none{
+	display:none;
+} */
+
+.tbody[data-slot="gid-body"]{
+	background-color: black;
+}

@@ -1,0 +1,26 @@
+version: 1
+applications:
+    - appRoot: .
+      frontend:
+          buildPath: . # Build output folder for Next.js
+          phases:
+              preBuild:
+                  commands:
+                      - echo "Entered the pre-build phase..."
+                      - pwd
+                      - npm install --force
+
+              build:
+                  commands:
+                      - echo "🛠️ Setting up your environmental variables..."
+                      - echo "Printing environmental variables to the console to
+                        ensure they are correct"
+                      - npm run build
+                      - echo "✅ Success!"
+          artifacts:
+              baseDirectory: .next # Amplify will serve from the `.next` folder
+              files:
+                  - '**/*'
+          cache:
+              paths:
+                  - node_modules/**/*

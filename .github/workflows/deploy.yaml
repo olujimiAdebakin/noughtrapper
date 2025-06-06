@@ -1,0 +1,99 @@
+name: Build and Deploy React App to S3
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    build-and-deploy:
+        name: Build and Deploy
+        runs-on: ubuntu-latest
+
+        env:
+            AWS_REGION: 'us-east-1'
+            TF_VERSION: '1.4.0'
+            TFLINT_VERSION: '0.46.1'
+            TFSEC_VERSION: '1.28.1'
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+
+            # - name: Install Yarn
+            #   run: npm install -g yarn
+
+            # - name: Install dependenciess
+            #   run: yarn install --frozen-lockfile
+
+            # - name: Build
+            #   run: yarn build
+            # - name: Install dependencies Build
+            #   run: npm install
+            # - name: Build
+            #   run: npm run build
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: us-east-1
+
+            - name: setup  terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  terraform_version: ${{ env.TF_VERSION}}
+
+            - name: format Terraform files
+              id: fmt_recursive
+              run: terraform fmt -recursive
+              working-directory: terraform
+
+            - name: Terraform format
+              id: fmt
+              run: terraform fmt -check
+              working-directory: terraform
+
+            - name: Terraform Init
+              id: init
+              run: terraform init
+              working-directory: terraform
+
+            - name: Terraform Validate
+              id: validate
+              run: terraform validate -no-color
+              working-directory: terraform
+
+            # - name: TFLINT
+            #   run: |
+            #       tflint --init
+            #       tflint
+
+            # - name: Terraform Security Scan
+            #   run: tfsec .
+
+            - name: Terraform Plan
+              id: plan
+              run: terraform plan -no-color  -out=tfplan
+              working-directory: terraform
+
+            # - name: Terraform Apply
+            #   run: terraform apply -auto-approve tfplan
+            #   working-directory: terraform
+
+            # - name: Deploy to S3
+            #   run: aws s3 sync ./out s3://noughttrapper --acl public-read
+
+            # - name: Invalidate CloudFront Cache
+            #   run:
+            #       aws cloudfront create-invalidation --distribution-id ${{
+            #       secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
